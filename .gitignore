@@ -1,0 +1,16 @@
+
+*.pt
+*.pth
+*.ckpt
+
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+*.ipynb_checkpoints/
+
+data/
+weights/
+checkpoints/
+logs/
