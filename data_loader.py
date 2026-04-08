@@ -1,4 +1,5 @@
 import os
+import random
 import scipy.io as sio
 import h5py
 import numpy as np
@@ -7,7 +8,7 @@ from torch.utils.data import Dataset, DataLoader
 
 
 class EEGEmoDataset(Dataset):
-    def __init__(self, data_root, mode='train'):
+    def __init__(self, data_root, mode='train', crop_len=2500):
         """
         EmoTeam - 脑电情绪识别数据集加载器 (兼容 MATLAB v7.3)
         :param data_root: 数据集的根目录 (例如 './data')
@@ -15,6 +16,7 @@ class EEGEmoDataset(Dataset):
         """
         self.mode = mode
         self.samples = []
+        self.crop_len = crop_len
 
         if self.mode == 'train':
             train_dir = os.path.join(data_root, 'train')
@@ -131,7 +133,15 @@ class EEGEmoDataset(Dataset):
     def __getitem__(self, idx):
         sample = self.samples[idx]
         # 转为 PyTorch 张量
-        data_tensor = torch.tensor(sample['data'], dtype=torch.float32)
+        data = sample['data'] # 原始形状 (30, Length)
+
+        # --- 最高优先级改进：训练阶段随机裁剪 ---
+        if self.mode == 'train':
+            max_start = data.shape[1] - self.crop_len  # 12500 - 2500 = 10000
+            start_idx = random.randint(0, max_start)
+            data = data[:, start_idx: start_idx + self.crop_len]
+
+        data_tensor = torch.tensor(data, dtype=torch.float32)
 
         # ----------------- 新增：EEG Z-Score 通道级标准化 -----------------
         # 沿着时间维度 (dim=1) 计算每个通道的均值和标准差

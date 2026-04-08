@@ -12,8 +12,8 @@ from domain_adaptation import get_alpha
 
 def train_loso_cv():
     # 超参数设置
-    EPOCHS = 10  # 实际比赛建议调高到 30-50
-    BATCH_SIZE = 16
+    EPOCHS = 50  # 实际比赛建议调高到 30-50
+    BATCH_SIZE = 32
     LR = 1e-4
     DATA_ROOT = './data'
 
@@ -54,15 +54,15 @@ def train_loso_cv():
         model = EmoTeamFramework().to(device)
 
         # ---------------- 新增：加载预训练权重 ----------------
-        pretrained_path = './weights/pretrained_backbone.pth'
-        import os  # 确保文件开头导入了 os
-        if os.path.exists(pretrained_path):
-            print(f"🔄 正在加载预训练 Backbone 权重...")
-            # 因为框架中基座的变量名是 backbone，所以直接对应加载
-            model.backbone.load_state_dict(torch.load(pretrained_path, map_location=device))
-            print("✅ 预训练权重加载成功！")
-        else:
-            print("⚠️ 未找到预训练权重，将随机初始化从头训练。")
+        # pretrained_path = './weights/pretrained_backbone.pth'
+        # import os  # 确保文件开头导入了 os
+        # if os.path.exists(pretrained_path):
+        #     print(f"🔄 正在加载预训练 Backbone 权重...")
+        #     # 因为框架中基座的变量名是 backbone，所以直接对应加载
+        #     model.backbone.load_state_dict(torch.load(pretrained_path, map_location=device))
+        #     print("✅ 预训练权重加载成功！")
+        # else:
+        #     print("⚠️ 未找到预训练权重，将随机初始化从头训练。")
         # ------------------------------------------------------
 
         optimizer = optim.AdamW(model.parameters(), lr=LR, weight_decay=1e-4)
