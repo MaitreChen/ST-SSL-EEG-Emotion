@@ -3,10 +3,9 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader, Subset
 import numpy as np
-import os
 
-from data_loader import EEGEmoDataset
-from stf_model import EEGEmoSTFNetwork
+from dataset.data_loader import EEGEmoDataset
+from models.stf_model import EEGEmoSTFNetwork
 
 
 # Mixup 数据增强函数

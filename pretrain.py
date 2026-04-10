@@ -3,14 +3,14 @@ import torch.optim as optim
 from torch.utils.data import DataLoader
 import os
 
-from data_loader import EEGEmoDataset
+from dataset.data_loader import EEGEmoDataset
 from vit_backbone import EEGTemporalViT
 from masked_pretrain import EEGMaskedAutoencoder
 
 
 def run_pretraining():
     # 超参数设置
-    PRETRAIN_EPOCHS = 50
+    PRETRAIN_EPOCHS = 200
     BATCH_SIZE = 32
     LR = 3e-4
     DATA_ROOT = './data'
@@ -35,6 +35,7 @@ def run_pretraining():
     backbone = EEGTemporalViT(in_channels=30, patch_size=50, embed_dim=256)
     mae_model = EEGMaskedAutoencoder(backbone, mask_ratio=0.4).to(device)
     optimizer = optim.AdamW(mae_model.parameters(), lr=LR, weight_decay=1e-4)
+    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=PRETRAIN_EPOCHS)
     criterion = torch.nn.SmoothL1Loss(reduction='none')
 
     # 3. 开始预训练循环
@@ -86,6 +87,8 @@ def run_pretraining():
 
         avg_loss = total_loss / total_batches if total_batches > 0 else 0
         print(f"Epoch [{epoch + 1}/{PRETRAIN_EPOCHS}] | Reconstruction Loss: {avg_loss:.4f}")
+
+        scheduler.step()
 
     # 4. 保存预训练好的 Backbone 权重
     save_path = os.path.join(SAVE_DIR, 'pretrained_backbone.pth')

@@ -54,19 +54,12 @@ class EEGTemporalViT(nn.Module):
         self.pos_embed = PositionalEncoding(d_model=embed_dim, max_len=2000)
 
         # 4. Transformer 编码器层
-        # encoder_layer = nn.TransformerEncoderLayer(d_model=embed_dim,
-        #                                            nhead=num_heads,
-        #                                            dim_feedforward=embed_dim * 4,
-        #                                            batch_first=True,
-        #                                            dropout=0.1)
-
-        # 在 vit_backbone.py 中修改：
         encoder_layer = nn.TransformerEncoderLayer(d_model=embed_dim,
                                                    nhead=num_heads,
                                                    dim_feedforward=embed_dim * 4,
                                                    batch_first=True,
                                                    dropout=0.1,
-                                                   norm_first=True)  # 🚨 救命神仙参数：开启 Pre-LN
+                                                   norm_first=True)
 
         self.transformer = nn.TransformerEncoder(encoder_layer, num_layers=num_layers)
 

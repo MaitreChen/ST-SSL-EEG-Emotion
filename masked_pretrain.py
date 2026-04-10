@@ -65,7 +65,7 @@ class EEGMaskedAutoencoder(nn.Module):
         # 2. 预测频域特征 (B, Num_Patches, 780)
         pred_fft = self.decoder(reconstructed_tokens)
 
-        # 🚨 核心改动 2：生成真实的频域目标 (FFT Target)
+        # 生成真实的频域目标 (FFT Target)
         L = patches.shape[1]
         # 提取出原始的 Patch 波形: (B, L, 30, 50)
         patches_raw = x.view(B, self.in_channels, L, self.patch_size).permute(0, 2, 1, 3)
